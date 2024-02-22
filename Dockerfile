@@ -6,6 +6,8 @@ WORKDIR /app
 
 # Copy the Java application source code into the container
 COPY phenomiser-cli-0.1.1.jar /app
+COPY hp.obo /app
+COPY phenotype.hpoa /app
 
 # Stage 2: Build the Flask API
 FROM python:3.8.10
