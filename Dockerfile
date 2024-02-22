@@ -1,22 +1,31 @@
-FROM python:3.8.10
+# Stage 1: Build the Java application
+FROM openjdk:11 AS java-builder
 
-ARG DEFAULT_PORT=81
-
+# Set the working directory in the container
 WORKDIR /app
 
-COPY requirements.txt .
-RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
+# Copy the Java application source code into the container
+COPY phenomiser-cli-0.1.1.jar /app
 
-COPY . .
+# Stage 2: Build the Flask API
+FROM python:3.8.10
 
-# 80 Is the default value and can be edited with --env PORT=?
-ENV PORT $DEFAULT_PORT
+# Set the working directory in the container
+WORKDIR /app
 
-# Dollar sign indicate docker that's name of env variable
-EXPOSE $PORT
-ENV FLASK_APP phenomizer.py
+# Copy the Flask application source code into the container
+COPY . /app
 
+# Copy the Java application from the previous stage into the container
+COPY --from=java-builder /app/phenomiser-cli-0.1.1.jar /app/phenomiser-cli-0.1.1.jar
 
-# VOLUME [ "/app/node_modules" ]
-CMD ["python", "-m", "flask", "run", "--host=0.0.0.0"]
+# Install Python dependencies
+RUN pip install --upgrade pip && \
+    pip install -r requirements.txt
+
+# Expose the port
+EXPOSE 5000
+
+# Command to run the Flask application
+CMD ["python", "phenomizer.py"]
+
