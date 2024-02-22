@@ -15,7 +15,7 @@ ENV PORT $DEFAULT_PORT
 
 # Dollar sign indicate docker that's name of env variable
 EXPOSE $PORT
-ENV FLASK_APP Bioservice.py
+ENV FLASK_APP phenomizer.py
 
 
 # VOLUME [ "/app/node_modules" ]
